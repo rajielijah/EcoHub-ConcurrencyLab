@@ -41,7 +41,6 @@ class FakeDeviceRepositoryTest {
         } catch (_: ConflictException) {
         }
 
-        // State remains unchanged after conflict.
         val state = repo.deviceState.value
         assertEquals(20.0, state.temperature, 0.0)
         assertEquals(0L, state.version)

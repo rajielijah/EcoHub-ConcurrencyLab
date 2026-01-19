@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-19T13:51:52.105Z" hostname="jahbies-MBP.fritz.box" time="0.076">
+<testsuite name="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-19T14:18:29.032Z" hostname="jahbies-MBP.fritz.box" time="0.104">
   <properties/>
-  <testcase name="overwrite after manual conflict forces user value and clears dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.041"/>
-  <testcase name="collaborative mode conflict auto resolves and shows technician snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.021"/>
-  <testcase name="successful user update emits success snackbar and updates ui" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.004"/>
-  <testcase name="keep technician after manual conflict keeps technician value and clears dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.004"/>
-  <testcase name="manual conflict shows dialog without snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.005"/>
+  <testcase name="overwrite after manual conflict forces user value and clears dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.059"/>
+  <testcase name="collaborative mode conflict auto resolves and shows technician snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.026"/>
+  <testcase name="successful user update emits success snackbar and updates ui" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.006"/>
+  <testcase name="keep technician after manual conflict keeps technician value and clears dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.005"/>
+  <testcase name="manual conflict shows dialog without snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.007"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
