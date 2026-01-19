@@ -33,8 +33,8 @@ class DeviceViewModel(
                 _uiState.update { it.copy(temperatureInput = intent.value) }
             }
 
-            is DeviceIntent.SetTemperatureRequested -> {
-                submitTemperature(intent.newTemp)
+            DeviceIntent.SetTemperatureClicked -> {
+                submitTemperatureFromInput()
             }
 
             is DeviceIntent.CollaborativeModeToggled -> {
@@ -77,6 +77,15 @@ class DeviceViewModel(
                 _uiState.update { it.copy(isUpdating = false) }
             }
         }
+    }
+
+    private fun submitTemperatureFromInput() {
+        val parsed = _uiState.value.temperatureInput.trim().toDoubleOrNull()
+        if (parsed == null) {
+            _effects.tryEmit(DeviceUiEffect.ShowSnackbar("Enter a valid temperature"))
+            return
+        }
+        submitTemperature(parsed)
     }
 
     private suspend fun handleConflict(
