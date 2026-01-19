@@ -71,6 +71,9 @@ class DeviceViewModel(
             val expectedVersion = repository.deviceState.value.version
             try {
                 repository.setTemperature(newTemp, expectedVersion)
+                _effects.tryEmit(
+                    DeviceUiEffect.ShowSnackbar("Temperature updated to ${formatTemperature(newTemp)}")
+                )
             } catch (conflict: ConflictException) {
                 handleConflict(conflict, newTemp, expectedVersion)
             } finally {
@@ -97,7 +100,7 @@ class DeviceViewModel(
         if (currentState.collaborativeMode) {
             _effects.tryEmit(
                 DeviceUiEffect.ShowSnackbar(
-                    message = "Technician updated temperature to ${formatTemperature(conflict.latest.temperature)}"
+                    message = "Updated by technician to ${formatTemperature(conflict.latest.temperature)}"
                 )
             )
             return
