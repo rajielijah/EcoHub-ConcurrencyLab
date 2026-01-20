@@ -1,5 +1,19 @@
 com.ecohub.concurrencylab
+anim fragment_fast_out_extra_slow_in
+animator fragment_close_enter
+animator fragment_close_exit
+animator fragment_fade_enter
+animator fragment_fade_exit
+animator fragment_open_enter
+animator fragment_open_exit
+attr action
 attr alpha
+attr argType
+attr data
+attr dataPattern
+attr destination
+attr enterAnim
+attr exitAnim
 attr font
 attr fontProviderAuthority
 attr fontProviderCerts
@@ -11,11 +25,26 @@ attr fontProviderSystemFontFamily
 attr fontStyle
 attr fontVariationSettings
 attr fontWeight
+attr graph
 attr lStar
+attr launchSingleTop
+attr mimeType
+attr navGraph
 attr nestedScrollViewStyle
+attr nullable
+attr popEnterAnim
+attr popExitAnim
+attr popUpTo
+attr popUpToInclusive
+attr popUpToSaveState
 attr queryPatterns
+attr restoreState
+attr route
 attr shortcutMatchRequired
+attr startDestination
+attr targetPackage
 attr ttcIndex
+attr uri
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
 color call_notification_answer_color
@@ -112,6 +141,7 @@ id consume_window_insets_tag
 id dialog_button
 id edit_text_id
 id forever
+id fragment_container_view_tag
 id hide_ime_id
 id hide_in_inspector_tag
 id icon
@@ -122,6 +152,7 @@ id is_pooling_container_tag
 id italic
 id line1
 id line3
+id nav_controller_view_tag
 id normal
 id notification_background
 id notification_main_column
@@ -130,6 +161,7 @@ id pooling_container_listener_holder_tag
 id report_drawn
 id right_icon
 id right_side
+id special_effects_controller_view_tag
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
 id tag_accessibility_heading
@@ -151,6 +183,7 @@ id view_tree_lifecycle_owner
 id view_tree_on_back_pressed_dispatcher_owner
 id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
+id visible_removing_fragment_view_tag
 id wrapped_composition_tag
 integer status_bar_notification_info_maxnum
 layout custom_dialog
@@ -177,7 +210,13 @@ string call_notification_ongoing_text
 string call_notification_screening_text
 string close_drawer
 string close_sheet
+string collaborative_mode
+string collaborative_off
+string collaborative_on
 string collapsed
+string conflict_description
+string conflict_title
+string current_temperature
 string date_input_headline
 string date_input_headline_description
 string date_input_invalid_for_pattern
@@ -209,13 +248,19 @@ string date_range_picker_scroll_to_next_month
 string date_range_picker_scroll_to_previous_month
 string date_range_picker_start_headline
 string date_range_picker_title
+string decrease_temperature
 string default_error_message
 string default_popup_window_title
+string device_control_subtitle
+string device_control_title
 string dialog
 string dropdown_menu
 string expanded
 string in_progress
+string increase_temperature
 string indeterminate
+string invalid_temperature
+string keep_technician
 string m3c_bottom_sheet_pane_title
 string navigation_menu
 string not_selected
@@ -225,11 +270,19 @@ string range_end
 string range_start
 string search_bar_search
 string selected
+string set_temperature
 string snackbar_dismiss
 string status_bar_notification_info_overflow
 string suggestions_available
 string switch_role
 string tab
+string technician_updated
+string temperature_adjusted
+string temperature_current
+string temperature_input_hint
+string temperature_input_label
+string temperature_loading
+string temperature_updated
 string template_percent
 string time_picker_am
 string time_picker_hour
@@ -245,6 +298,9 @@ string time_picker_period_toggle_description
 string time_picker_pm
 string tooltip_long_press_label
 string tooltip_pane_description
+string update
+string updating
+string use_mine
 style DialogWindowTheme
 style FloatingDialogTheme
 style FloatingDialogWindowTheme
@@ -256,9 +312,19 @@ style TextAppearance_Compat_Notification_Title
 style Theme_EcoHubConcurrencyLab
 style Widget_Compat_NotificationActionContainer
 style Widget_Compat_NotificationActionText
+styleable ActivityNavigator android_name action data dataPattern targetPackage
 styleable Capability queryPatterns shortcutMatchRequired
 styleable ColorStateListItem android_color android_alpha android_lStar alpha lStar
 styleable FontFamily fontProviderAuthority fontProviderCerts fontProviderFetchStrategy fontProviderFetchTimeout fontProviderPackage fontProviderQuery fontProviderSystemFontFamily
 styleable FontFamilyFont android_font android_fontWeight android_fontStyle android_ttcIndex android_fontVariationSettings font fontStyle fontVariationSettings fontWeight ttcIndex
+styleable Fragment android_name android_id android_tag
+styleable FragmentContainerView android_name android_tag
 styleable GradientColor android_startColor android_endColor android_type android_centerX android_centerY android_gradientRadius android_tileMode android_centerColor android_startX android_startY android_endX android_endY
 styleable GradientColorItem android_color android_offset
+styleable NavAction android_id destination enterAnim exitAnim launchSingleTop popEnterAnim popExitAnim popUpTo popUpToInclusive popUpToSaveState restoreState
+styleable NavArgument android_name android_defaultValue argType nullable
+styleable NavDeepLink android_autoVerify action mimeType uri
+styleable NavGraphNavigator startDestination
+styleable NavHost navGraph
+styleable NavInclude graph
+styleable Navigator android_label android_id route

@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EcoHub Device Control</string>
+    <string name="collaborative_mode">Collaborative Mode</string>
+    <string name="collaborative_off">
+        If there’s a conflict, you’ll choose what to keep.
+    </string>
+    <string name="collaborative_on">
+        Conflicts auto-resolve by keeping the technician value.
+    </string>
+    <string name="conflict_description">
+        A technician updated this device while you were editing.
+    </string>
+    <string name="conflict_title">Update conflict</string>
+    <string name="current_temperature">Current temperature</string>
+    <string name="decrease_temperature">Decrease temperature</string>
+    <string name="device_control_subtitle">
+        Set a target temperature and handle technician updates.
+    </string>
+    <string name="device_control_title">Device Control</string>
+    <string name="increase_temperature">Increase temperature</string>
+    <string name="invalid_temperature">
+        Enter a valid temperature
+    </string>
+    <string name="keep_technician">Keep technician</string>
+    <string name="set_temperature">Set temperature</string>
+    <string name="technician_updated">
+        Updated by technician to %1$s
+    </string>
+    <string name="temperature_adjusted">
+        Temperature adjusted to %1$s
+    </string>
+    <string name="temperature_current">
+        Current temperature is %1$s
+    </string>
+    <string name="temperature_input_hint">Example: 21.5</string>
+    <string name="temperature_input_label">Temperature</string>
+    <string name="temperature_loading">
+        Current temperature is loading
+    </string>
+    <string name="temperature_updated">
+        Temperature updated to %1$s
+    </string>
+    <string name="update">Update</string>
+    <string name="updating">Updating…</string>
+    <string name="use_mine">Use mine</string>
     <style name="Theme.EcoHubConcurrencyLab" parent="android:Theme.Material.Light.NoActionBar"/>
 </resources>

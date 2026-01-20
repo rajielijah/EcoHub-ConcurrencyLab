@@ -2,19 +2,23 @@ package com.ecohub.concurrencylab.ui.device
 
 data class DeviceUiState(
     val loading: Boolean = true,
-    val temperatureText: String = "",
+    val temperature: Double? = null,
     val versionLabel: String = "",
     val temperatureInput: String = "",
     val collaborativeMode: Boolean = false,
     val isUpdating: Boolean = false,
-    val conflictDialog: ConflictDialogState? = null
-)
+    val conflictDialog: ConflictDialogState? = null,
+    val canIncrement: Boolean = false,
+    val canDecrement: Boolean = false,
+) {
+
+    val temperatureText: String
+        get() = temperature?.let { String.format("%.1f°C", it) } ?: "—"
+}
 
 data class ConflictDialogState(
     val userAttemptedTemp: Double,
-    val expectedVersion: Long,
     val technicianTemp: Double,
-    val technicianVersion: Long
 )
 
 sealed class DeviceUiEffect {

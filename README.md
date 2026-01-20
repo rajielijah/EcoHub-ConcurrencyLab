@@ -55,6 +55,11 @@ A coroutine runs every 15 seconds, updating temperature and incrementing version
 
 The technician job uses the same `mutex.withLock` critical section, ensuring deterministic interleaving.
 
+### Manual temperature input
+
+In addition to the + / − buttons, I added a text input field for setting the temperature directly.
+The buttons adjust the temperature in fixed steps of 0.5, which is convenient for small changes, but it doesn’t cover all valid values. The text field allows users to enter any supported temperature
+
 ### Making race conditions observable (artificial latency)
 
 In a local environment, race conditions are rare because everything executes almost instantly.
@@ -86,13 +91,33 @@ Mutex was chosen for explicit critical sections and easier reasoning.
 
 **Trade-off**: Slightly more verbose, but clearer ownership and easier to extend.
 
+### Intent-driven MVVM (MVI-style flow)
+
+This implementation uses MVVM with explicit intents and unidirectional data flow, rather than a strict MVI setup.
+
+I chose this approach because it keeps the code easy to read and practical, while still giving me a clear and predictable flow of events. 
+Every user action goes through an intent, state is updated in one place, and the UI simply reacts to that state. 
+This was especially useful for handling concurrent updates and conflicts without spreading logic across the UI.
+
 ### Repository-enforced constraints
 
 Prevents invalid state regardless of how updates are triggered.
 
 ### Artificial latency
 
-Makes race conditions observable without polluting UI logic.
+Makes race conditions observable without polluting UI logic.v
+
+### String resources
+
+All user-facing UI text is defined in strings.xml.
+Snackbar messages are generated in the ViewModel as one-off UI effects, 
+which keeps the ViewModel free of Android resource dependencies while ensuring that the main UI text remains fully localizable. I
+n a production app, these messages could also be moved to string resources if more comprehensive localization were required.
+
+### FakeDeviceRepository
+
+FakeDeviceRepository embeds domain rules (min/max temperature, technician interval)directly to keep the concurrency model self-contained and observable.
+In production, these would be provided by domain services or configuration.
 
 ### In-Memory setup
 
@@ -112,4 +137,4 @@ Tool: ChatGPT.
 
 - It was also useful during documentation (README.md).
 
-ChatGPT did not design the architecture or write the core logic. It was mainly used as a support tool for debugging, validation, and documentation.
+**ChatGPT did not design the architecture or write the core logic. It was mainly used as a support tool for debugging, validation, and documentation.**

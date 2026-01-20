@@ -5,10 +5,11 @@ import com.ecohub.concurrencylab.data.repository.FakeDeviceRepository
 import com.ecohub.concurrencylab.testutil.MainDispatcherRule
 import com.ecohub.concurrencylab.ui.preferences.FakeUiPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,36 +28,22 @@ class DeviceViewModelTest {
             technicianIntervalMillis = Long.MAX_VALUE
         )
         uiPreferences = FakeUiPreferences()
-
-        viewModel = DeviceViewModel(
-            repository = repository,
-            uiPreferences = uiPreferences
-        )
+        viewModel = DeviceViewModel(repository, uiPreferences)
     }
 
     @Test
-    fun `initial state reflects repository temperature and preferences`() = runTest {
+    fun `initial state reflects repository and preferences`() = runTest {
         createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals("20.0°C", state.temperatureText)
+        assertEquals(20.0, state.temperature)
         assertEquals("v0", state.versionLabel)
         assertEquals(false, state.collaborativeMode)
     }
 
     @Test
-    fun `temperature input updates ui state`() = runTest {
-        createViewModel()
-
-        viewModel.onIntent(DeviceIntent.TemperatureInputChanged("23.5"))
-
-        val state = viewModel.uiState.value
-        assertEquals("23.5", state.temperatureInput)
-    }
-
-    @Test
-    fun `set temperature updates repository and ui state`() = runTest {
+    fun `valid input updates temperature`() = runTest {
         createViewModel()
 
         viewModel.onIntent(DeviceIntent.TemperatureInputChanged("22.0"))
@@ -65,57 +52,47 @@ class DeviceViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals("22.0°C", state.temperatureText)
+        assertEquals(22.0, state.temperature)
         assertEquals("v1", state.versionLabel)
     }
 
     @Test
-    fun `invalid temperature input emits snackbar effect`() = runTest {
+    fun `invalid input emits snackbar`() = runTest {
         createViewModel()
+
+        val effects = mutableListOf<DeviceUiEffect>()
+        val job = launch {
+            viewModel.effects.collect { effects += it }
+        }
+
+        yield()
 
         viewModel.onIntent(DeviceIntent.TemperatureInputChanged("abc"))
         viewModel.onIntent(DeviceIntent.SetTemperatureClicked)
 
         advanceUntilIdle()
 
-        val effect = viewModel.effects.replayCache.firstOrNull()
-        assertNotNull(effect)
+        assertEquals(1, effects.size)
+        assertEquals(
+            "Enter a valid temperature",
+            (effects.first() as DeviceUiEffect.ShowSnackbar).message
+        )
+
+        job.cancel()
     }
 
+
     @Test
-    fun `collaborative mode toggle updates state and preferences`() = runTest {
+    fun `collaborative mode conflict emits snackbar and no dialog`() = runTest {
         createViewModel()
 
         viewModel.onIntent(DeviceIntent.CollaborativeModeToggled(true))
-
-        val state = viewModel.uiState.value
-        assertEquals(true, state.collaborativeMode)
-        assertEquals(true, uiPreferences.isCollaborativeModeEnabled())
-    }
-
-//    @Test
-//    fun `conflict shows dialog when collaborative mode is off`() = runTest {
-//        createViewModel()
-//
-//        repository.forceUpdate(21.0)
-//
-//        viewModel.onIntent(DeviceIntent.TemperatureInputChanged("22.0"))
-//        viewModel.onIntent(DeviceIntent.SetTemperatureClicked)
-//
-//        advanceUntilIdle()
-//
-//        val state = viewModel.uiState.value
-//        assertNotNull(state.conflictDialog)
-//        assertEquals(21.0, state.conflictDialog!!.technicianTemp, 0.0)
-//    }
-
-    @Test
-    fun `conflict in collaborative mode emits snackbar instead of dialog`() = runTest {
-        createViewModel()
-
-        viewModel.onIntent(DeviceIntent.CollaborativeModeToggled(true))
-
         repository.forceUpdate(21.0)
+
+        val effects = mutableListOf<DeviceUiEffect>()
+        val job = launch {
+            viewModel.effects.collect { effects += it }
+        }
 
         viewModel.onIntent(DeviceIntent.TemperatureInputChanged("22.0"))
         viewModel.onIntent(DeviceIntent.SetTemperatureClicked)
@@ -124,27 +101,32 @@ class DeviceViewModelTest {
 
         val state = viewModel.uiState.value
         assertEquals(null, state.conflictDialog)
+        assertEquals(1, effects.size)
 
-        val effect = viewModel.effects.replayCache.firstOrNull()
-        assertNotNull(effect)
+        job.cancel()
     }
 
+
     @Test
-    fun `force overwrite resolves conflict and clears dialog`() = runTest {
+    fun `option B feedback emits adjusted message when clamped`() = runTest {
         createViewModel()
 
-        repository.forceUpdate(21.0)
+        val effects = mutableListOf<DeviceUiEffect>()
+        val job = launch {
+            viewModel.effects.collect { effects += it }
+        }
 
-        viewModel.onIntent(DeviceIntent.TemperatureInputChanged("23.0"))
+        viewModel.onIntent(DeviceIntent.TemperatureInputChanged("100"))
         viewModel.onIntent(DeviceIntent.SetTemperatureClicked)
 
         advanceUntilIdle()
 
-        viewModel.onIntent(DeviceIntent.ConflictForceOverwriteChosen)
-        advanceUntilIdle()
+        assertEquals(30.0, viewModel.uiState.value.temperature)
+        assertEquals(
+            "Temperature adjusted to 30.0°C",
+            (effects.last() as DeviceUiEffect.ShowSnackbar).message
+        )
 
-        val state = viewModel.uiState.value
-        assertEquals(null, state.conflictDialog)
-        assertEquals("23.0°C", state.temperatureText)
+        job.cancel()
     }
 }

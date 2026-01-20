@@ -1,4 +1,27 @@
 R_DEF: Internal format may change without notice
 local
 string app_name
+string collaborative_mode
+string collaborative_off
+string collaborative_on
+string conflict_description
+string conflict_title
+string current_temperature
+string decrease_temperature
+string device_control_subtitle
+string device_control_title
+string increase_temperature
+string invalid_temperature
+string keep_technician
+string set_temperature
+string technician_updated
+string temperature_adjusted
+string temperature_current
+string temperature_input_hint
+string temperature_input_label
+string temperature_loading
+string temperature_updated
+string update
+string updating
+string use_mine
 style Theme.EcoHubConcurrencyLab

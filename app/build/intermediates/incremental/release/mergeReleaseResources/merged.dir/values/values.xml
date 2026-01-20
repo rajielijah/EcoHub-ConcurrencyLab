@@ -67,13 +67,16 @@
     <item name="androidx_compose_ui_view_composition_context" type="id"/>
     <item name="compose_view_saveable_id_tag" type="id"/>
     <item name="consume_window_insets_tag" type="id"/>
+    <item name="fragment_container_view_tag" type="id"/>
     <item name="hide_in_inspector_tag" type="id"/>
     <item name="inspection_slot_table_set" type="id"/>
     <item name="is_pooling_container_tag" type="id"/>
     <item name="line1" type="id"/>
     <item name="line3" type="id"/>
+    <item name="nav_controller_view_tag" type="id"/>
     <item name="pooling_container_listener_holder_tag" type="id"/>
     <item name="report_drawn" type="id"/>
+    <item name="special_effects_controller_view_tag" type="id"/>
     <item name="tag_accessibility_actions" type="id"/>
     <item name="tag_accessibility_clickable_spans" type="id"/>
     <item name="tag_accessibility_heading" type="id"/>
@@ -94,6 +97,7 @@
     <id name="view_tree_on_back_pressed_dispatcher_owner"/>
     <id name="view_tree_saved_state_registry_owner"/>
     <id name="view_tree_view_model_store_owner"/>
+    <item name="visible_removing_fragment_view_tag" type="id"/>
     <item name="wrapped_composition_tag" type="id"/>
     <integer name="status_bar_notification_info_maxnum">999</integer>
     <string name="androidx_startup" translatable="false">androidx.startup</string>
@@ -111,7 +115,19 @@
     <string name="call_notification_screening_text">Screening an incoming call</string>
     <string name="close_drawer">"Close navigation menu"</string>
     <string name="close_sheet">"Close sheet"</string>
+    <string name="collaborative_mode">Collaborative Mode</string>
+    <string name="collaborative_off">
+        If there’s a conflict, you’ll choose what to keep.
+    </string>
+    <string name="collaborative_on">
+        Conflicts auto-resolve by keeping the technician value.
+    </string>
     <string name="collapsed">Collapsed</string>
+    <string name="conflict_description">
+        A technician updated this device while you were editing.
+    </string>
+    <string name="conflict_title">Update conflict</string>
+    <string name="current_temperature">Current temperature</string>
     <string name="date_input_headline">Entered date</string>
     <string name="date_input_headline_description">Entered date: %1$s</string>
     <string name="date_input_invalid_for_pattern">Date does not match expected pattern: %1$s</string>
@@ -147,13 +163,23 @@
     <string name="date_range_picker_scroll_to_previous_month">Scroll to show the previous month</string>
     <string name="date_range_picker_start_headline">Start date</string>
     <string name="date_range_picker_title">Select dates</string>
+    <string name="decrease_temperature">Decrease temperature</string>
     <string name="default_error_message">"Invalid input"</string>
     <string name="default_popup_window_title" ns1:ignore="ExtraTranslation">"Pop-Up Window"</string>
+    <string name="device_control_subtitle">
+        Set a target temperature and handle technician updates.
+    </string>
+    <string name="device_control_title">Device Control</string>
     <string name="dialog">"Dialog"</string>
     <string name="dropdown_menu">"Dropdown menu"</string>
     <string name="expanded">Expanded</string>
     <string name="in_progress">In progress</string>
+    <string name="increase_temperature">Increase temperature</string>
     <string name="indeterminate">Partially checked</string>
+    <string name="invalid_temperature">
+        Enter a valid temperature
+    </string>
+    <string name="keep_technician">Keep technician</string>
     <string name="m3c_bottom_sheet_pane_title">Bottom Sheet</string>
     <string name="navigation_menu">"Navigation menu"</string>
     <string name="not_selected">Not selected</string>
@@ -163,11 +189,29 @@
     <string name="range_start">"Range start"</string>
     <string name="search_bar_search">Search</string>
     <string name="selected">Selected</string>
+    <string name="set_temperature">Set temperature</string>
     <string name="snackbar_dismiss">Dismiss</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="suggestions_available">Suggestions below</string>
     <string name="switch_role">Switch</string>
     <string name="tab">Tab</string>
+    <string name="technician_updated">
+        Updated by technician to %1$s
+    </string>
+    <string name="temperature_adjusted">
+        Temperature adjusted to %1$s
+    </string>
+    <string name="temperature_current">
+        Current temperature is %1$s
+    </string>
+    <string name="temperature_input_hint">Example: 21.5</string>
+    <string name="temperature_input_label">Temperature</string>
+    <string name="temperature_loading">
+        Current temperature is loading
+    </string>
+    <string name="temperature_updated">
+        Temperature updated to %1$s
+    </string>
     <string name="template_percent"><ns2:g id="percentage">%1$d</ns2:g> percent.</string>
     <string name="time_picker_am">AM</string>
     <string name="time_picker_hour">Hour</string>
@@ -183,6 +227,9 @@
     <string name="time_picker_pm">PM</string>
     <string name="tooltip_long_press_label">Show tooltip</string>
     <string name="tooltip_pane_description">Tooltip</string>
+    <string name="update">Update</string>
+    <string name="updating">Updating…</string>
+    <string name="use_mine">Use mine</string>
     <style name="DialogWindowTheme">
         <item name="android:windowClipToOutline">false</item>
     </style>
@@ -207,6 +254,13 @@
     <style name="Theme.EcoHubConcurrencyLab" parent="android:Theme.Material.Light.NoActionBar"/>
     <style name="Widget.Compat.NotificationActionContainer" parent=""/>
     <style name="Widget.Compat.NotificationActionText" parent=""/>
+    <declare-styleable name="ActivityNavigator">
+        <attr name="android:name"/>
+        <attr format="string" name="action"/>
+        <attr format="string" name="data"/>
+        <attr format="string" name="dataPattern"/>
+        <attr format="string" name="targetPackage"/>
+    </declare-styleable>
     <declare-styleable name="Capability">
         
         <attr format="reference" name="queryPatterns"/>
@@ -277,6 +331,15 @@
         <attr name="android:fontVariationSettings"/>
         <attr name="android:ttcIndex"/>
     </declare-styleable>
+    <declare-styleable name="Fragment">
+        <attr name="android:name"/>
+        <attr name="android:id"/>
+        <attr name="android:tag"/>
+    </declare-styleable>
+    <declare-styleable name="FragmentContainerView">
+        <attr name="android:name"/>
+        <attr name="android:tag"/>
+    </declare-styleable>
     <declare-styleable name="GradientColor">
         
         <attr name="android:startColor"/>
@@ -315,5 +378,44 @@
         <attr name="android:offset"/>
         
         <attr name="android:color"/>
+    </declare-styleable>
+    <declare-styleable name="NavAction">
+        <attr name="android:id"/>
+        <attr format="reference" name="destination"/>
+        <attr format="boolean" name="launchSingleTop"/>
+        <attr format="boolean" name="restoreState"/>
+        <attr format="reference" name="popUpTo"/>
+        <attr format="boolean" name="popUpToInclusive"/>
+        <attr format="boolean" name="popUpToSaveState"/>
+        <attr format="reference" name="enterAnim"/>
+        <attr format="reference" name="exitAnim"/>
+        <attr format="reference" name="popEnterAnim"/>
+        <attr format="reference" name="popExitAnim"/>
+    </declare-styleable>
+    <declare-styleable name="NavArgument">
+        <attr name="android:name"/>
+        <attr name="android:defaultValue"/>
+        <attr format="boolean" name="nullable"/>
+        <attr format="string" name="argType"/>
+    </declare-styleable>
+    <declare-styleable name="NavDeepLink">
+        <attr format="string" name="uri"/>
+        <attr format="string" name="action"/>
+        <attr format="string" name="mimeType"/>
+        <attr name="android:autoVerify"/>
+    </declare-styleable>
+    <declare-styleable name="NavGraphNavigator">
+        <attr format="reference" name="startDestination"/>
+    </declare-styleable>
+    <declare-styleable name="NavHost">
+        <attr format="reference" name="navGraph"/>
+    </declare-styleable>
+    <declare-styleable name="NavInclude">
+        <attr format="reference" name="graph"/>
+    </declare-styleable>
+    <declare-styleable name="Navigator">
+        <attr name="android:id"/>
+        <attr format="string" name="route"/>
+        <attr name="android:label"/>
     </declare-styleable>
 </resources>

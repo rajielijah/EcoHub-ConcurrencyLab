@@ -1,13 +1,13 @@
 package com.ecohub.concurrencylab.ui.device
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.AlertDialog
@@ -26,7 +26,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.ecohub.concurrencylab.R
 
 @Composable
 fun DeviceScreen(
@@ -45,9 +49,11 @@ fun DeviceScreen(
         ) {
             ScreenHeader()
             TemperatureHeroCard(
-                temperatureText = state.temperatureText,
+                temperature = state.temperature,
                 versionLabel = state.versionLabel,
                 loading = state.loading,
+                canIncrement = state.canIncrement,
+                canDecrement = state.canDecrement,
                 onAdjustClicked = { delta ->
                     onIntent(DeviceIntent.AdjustTemperature(delta))
                 }
@@ -61,6 +67,7 @@ fun DeviceScreen(
             )
             CollaborativeModeCard(
                 enabled = state.collaborativeMode,
+                enabledInteraction = state.conflictDialog == null,
                 onEnabledChanged = { onIntent(DeviceIntent.CollaborativeModeToggled(it)) }
             )
         }
@@ -80,11 +87,11 @@ fun DeviceScreen(
 private fun ScreenHeader() {
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.TextTightSpacing)) {
         Text(
-            text = "Device Control",
+            text = stringResource(R.string.device_control_title),
             style = MaterialTheme.typography.titleLarge
         )
         Text(
-            text = "Set a target temperature and handle technician updates.",
+            text = stringResource(R.string.device_control_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -93,13 +100,14 @@ private fun ScreenHeader() {
 
 @Composable
 private fun TemperatureHeroCard(
-    temperatureText: String,
+    temperature: Double?,
     versionLabel: String,
     loading: Boolean,
+    canIncrement: Boolean,
+    canDecrement: Boolean,
     onAdjustClicked: (Double) -> Unit
 ) {
-    val isAtMax = temperatureText.startsWith("30.0")
-    val isAtMin = temperatureText.startsWith("5.0")
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -116,7 +124,7 @@ private fun TemperatureHeroCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Current temperature",
+                    text = stringResource(R.string.current_temperature),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -135,10 +143,11 @@ private fun TemperatureHeroCard(
                     .fillMaxWidth()
                     .semantics {
                         contentDescription =
-                            if (loading)
+                            if (loading) {
                                 "Current temperature is loading"
-                            else
-                                "Current temperature: $temperatureText"
+                            } else {
+                                "Current temperature is ${formatTemp(temperature)}"
+                            }
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -146,20 +155,26 @@ private fun TemperatureHeroCard(
 
                 Button(
                     onClick = { onAdjustClicked(-0.5) },
-                    enabled = !loading  && !isAtMin
+                    enabled = !loading && canDecrement,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Decrease temperature"
+                    }
                 ) {
                     Text("–")
                 }
 
                 Text(
-                    text = if (loading) "—" else temperatureText,
+                    text = if (loading || temperature == null) "—" else formatTemp(temperature),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Button(
                     onClick = { onAdjustClicked(+0.5) },
-                    enabled = !loading && !isAtMax
+                    enabled = !loading && canIncrement,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Increase temperature"
+                    }
                 ) {
                     Text("+")
                 }
@@ -187,17 +202,21 @@ private fun TemperatureControlsCard(
             verticalArrangement = Arrangement.spacedBy(Dimens.ControlSpacing)
         ) {
             Text(
-                text = "Set temperature",
+                text = stringResource(R.string.set_temperature),
                 style = MaterialTheme.typography.titleMedium
             )
 
             OutlinedTextField(
                 value = temperatureInput,
                 onValueChange = onTemperatureInputChanged,
-                label = { Text("Temperature") },
-                supportingText = { Text("Example: 21.5") },
+                label = { Text(stringResource(R.string.temperature_input_label)) },
+                supportingText = { Text(stringResource(R.string.temperature_input_hint)) },
                 singleLine = true,
                 enabled = !loading && !isUpdating,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .semantics { contentDescription = "Temperature input" }
@@ -211,7 +230,12 @@ private fun TemperatureControlsCard(
                     .height(Dimens.PrimaryButtonHeight),
                 colors = ButtonDefaults.buttonColors()
             ) {
-                Text(text = if (isUpdating) "Updating…" else "Update")
+                Text(
+                    text = if (isUpdating)
+                        stringResource(R.string.updating)
+                    else
+                        stringResource(R.string.update)
+                )
             }
         }
     }
@@ -220,6 +244,7 @@ private fun TemperatureControlsCard(
 @Composable
 private fun CollaborativeModeCard(
     enabled: Boolean,
+    enabledInteraction: Boolean,
     onEnabledChanged: (Boolean) -> Unit
 ) {
     Card(
@@ -239,14 +264,12 @@ private fun CollaborativeModeCard(
                 verticalArrangement = Arrangement.spacedBy(Dimens.TextTightSpacing)
             ) {
                 Text(
-                    text = "Collaborative Mode",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                    text = stringResource(R.string.collaborative_mode))
                 Text(
                     text = if (enabled) {
-                        "Conflicts auto-resolve by keeping the technician value."
+                        stringResource(R.string.collaborative_on)
                     } else {
-                        "If there’s a conflict, you’ll choose what to keep."
+                        stringResource(R.string.collaborative_off)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -255,8 +278,13 @@ private fun CollaborativeModeCard(
             Spacer(modifier = Modifier.padding(start = Dimens.ControlSpacing))
             Switch(
                 checked = enabled,
-                onCheckedChange = onEnabledChanged,
-                modifier = Modifier.semantics { contentDescription = "Collaborative mode" }
+                onCheckedChange = {
+                    if (enabledInteraction) onEnabledChanged(it)
+                },
+                enabled = enabledInteraction,
+                modifier = Modifier.semantics {
+                    contentDescription = "Collaborative mode"
+                }
             )
         }
     }
@@ -270,41 +298,39 @@ private fun ConflictDialog(
 ) {
     AlertDialog(
         onDismissRequest = { },
-        title = { Text("Update conflict") },
+        title = { Text(stringResource(R.string.conflict_title))  },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Dimens.TextSpacing)) {
                 Text(
-                    text = "A technician updated this device while you were editing.",
+                    text = stringResource(R.string.conflict_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Technician: ${formatDialogTemp(state.technicianTemp)}",
+                    text = "Technician: ${formatTemp(state.technicianTemp)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "Your value: ${formatDialogTemp(state.userAttemptedTemp)}",
+                    text = "Your value: ${formatTemp(state.userAttemptedTemp)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = onKeepTechnician) {
-                Text("Keep technician")
+                Text(stringResource(R.string.keep_technician))
             }
         },
         dismissButton = {
             TextButton(onClick = onOverwrite) {
-                Text("Use mine")
+                Text(stringResource(R.string.use_mine))
             }
         }
     )
 }
 
-private fun formatDialogTemp(value: Double): String {
-    return String.format("%.1f°C", value)
-}
-
+private fun formatTemp(value: Double?): String =
+    value?.let { String.format("%.1f°C", it) } ?: "—"
 private object Dimens {
     val ScreenHorizontalPadding = 16.dp
     val ScreenVerticalPadding = 20.dp

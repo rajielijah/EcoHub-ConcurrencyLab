@@ -1,7 +1,5 @@
 package com.ecohub.concurrencylab.ui.device
 
-import android.app.Application
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ecohub.concurrencylab.data.error.ConflictException
@@ -14,10 +12,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import androidx.core.content.edit
 import com.ecohub.concurrencylab.ui.preferences.UiPreferences
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import javax.inject.Inject
 
-class DeviceViewModel(
+@HiltViewModel
+class DeviceViewModel @Inject constructor(
     private val repository: DeviceRepository,
     private val uiPreferences: UiPreferences,
 ) : ViewModel() {
@@ -30,10 +31,12 @@ class DeviceViewModel(
 
     val uiState: StateFlow<DeviceUiState> = _uiState.asStateFlow()
 
-    private val _effects = MutableSharedFlow<DeviceUiEffect>(replay = 1)
+    private val _effects = MutableSharedFlow<DeviceUiEffect>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     val effects: SharedFlow<DeviceUiEffect> = _effects.asSharedFlow()
 
-    private val MAX_TEMP = 30.0
 
     init {
         observeDeviceState()
@@ -75,8 +78,10 @@ class DeviceViewModel(
                 _uiState.update {
                     it.copy(
                         loading = false,
-                        temperatureText = formatTemperature(deviceState.temperature),
-                        versionLabel = "v${deviceState.version}"
+                        temperature = deviceState.temperature,
+                        versionLabel = "v${deviceState.version}",
+                        canIncrement = deviceState.temperature < repository.maxTemperature,
+                        canDecrement = deviceState.temperature > repository.minTemperature,
                     )
                 }
             }
@@ -85,72 +90,58 @@ class DeviceViewModel(
 
     private fun submitTemperature(newTemp: Double) {
         viewModelScope.launch {
-            // Read version right before attempting update to maximize conflict detection window
             val expectedVersion = repository.deviceState.value.version
             _uiState.update { it.copy(isUpdating = true) }
             try {
                 repository.setTemperature(newTemp, expectedVersion)
-                _effects.tryEmit(
-                    DeviceUiEffect.ShowSnackbar("Temperature updated to ${formatTemperature(newTemp)}")
-                )
+                val actualTemp = repository.deviceState.value.temperature
+                if (actualTemp != newTemp) {
+                    emitSnackbar(
+                        "Temperature adjusted to ${formatTemperature(actualTemp)}"
+                    )
+                } else {
+                    emitSnackbar(
+                        "Temperature updated to ${formatTemperature(actualTemp)}"
+                    )
+                }
             } catch (conflict: ConflictException) {
-                handleConflict(conflict, newTemp, expectedVersion)
+                handleConflict(conflict, newTemp)
             } finally {
                 _uiState.update { it.copy(isUpdating = false) }
             }
         }
     }
 
-//    private fun submitTemperatureFromInput() {
-//        val parsed = _uiState.value.temperatureInput.trim().toDoubleOrNull()
-//        if (parsed == null) {
-//            _effects.tryEmit(DeviceUiEffect.ShowSnackbar("Enter a valid temperature"))
-//            return
-//        }
-//        submitTemperature(parsed)
-//    }
-
     private fun submitTemperatureFromInput() {
         val parsed = _uiState.value.temperatureInput.trim().toDoubleOrNull()
         if (parsed == null) {
-            _effects.tryEmit(DeviceUiEffect.ShowSnackbar("Enter a valid temperature"))
+            emitSnackbar("Enter a valid temperature")
             return
         }
-
-        if (parsed > MAX_TEMP) {
-            _effects.tryEmit(
-                DeviceUiEffect.ShowSnackbar("Maximum temperature is ${MAX_TEMP}°C")
-            )
-            return
-        }
-
         submitTemperature(parsed)
     }
 
-
     private fun adjustCurrentTemperature(delta: Double) {
-        val current = _uiState.value.temperatureText
-            .removeSuffix("°C")
-            .trim()
-            .toDoubleOrNull()
-            ?: return
-
-        val updated = current + delta
-
-        submitTemperature(updated)
+        val current = _uiState.value.temperature
+            ?: error("Temperature must be available before adjusting")
+        submitTemperature(current + delta)
     }
+
+
 
     private suspend fun handleConflict(
         conflict: ConflictException,
         userTemp: Double,
-        expectedVersion: Long,
     ) {
         val currentState = _uiState.value
         if (currentState.collaborativeMode) {
-            _effects.tryEmit(
-                DeviceUiEffect.ShowSnackbar(
-                    message = "Updated by technician to ${formatTemperature(conflict.latest.temperature)}"
+            _uiState.update {
+                it.copy(
+                    temperatureInput = ""
                 )
+            }
+            emitSnackbar(
+                "Updated by technician to ${formatTemperature(conflict.latest.temperature)}"
             )
             return
         }
@@ -159,9 +150,7 @@ class DeviceViewModel(
             it.copy(
                 conflictDialog = ConflictDialogState(
                     userAttemptedTemp = userTemp,
-                    expectedVersion = expectedVersion,
                     technicianTemp = conflict.latest.temperature,
-                    technicianVersion = conflict.latest.version
                 )
             )
         }
@@ -176,6 +165,10 @@ class DeviceViewModel(
                 _uiState.update { it.copy(conflictDialog = null) }
             }
         }
+    }
+
+    private fun emitSnackbar(message: String) {
+        _effects.tryEmit(DeviceUiEffect.ShowSnackbar(message))
     }
 
     private fun formatTemperature(value: Double): String {
