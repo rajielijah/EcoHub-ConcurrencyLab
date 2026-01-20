@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-01-19T14:18:28.812Z" hostname="jahbies-MBP.fritz.box" time="0.208">
+<testsuite name="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-01-20T11:09:41.304Z" hostname="jahbies-MBP.fritz.box" time="0.012">
   <properties/>
-  <testcase name="user update conflicts when technician advanced version" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.195"/>
-  <testcase name="setTemperature updates state when version matches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.003"/>
-  <testcase name="setTemperature throws conflict when version mismatches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.005"/>
-  <testcase name="technician job updates temperature and increments version" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.004"/>
+  <testcase name="user update conflicts when technician advanced version" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.004"/>
+  <testcase name="setTemperature updates state when version matches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.002"/>
+  <testcase name="setTemperature throws conflict when version mismatches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.003"/>
+  <testcase name="technician job updates temperature and increments version" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

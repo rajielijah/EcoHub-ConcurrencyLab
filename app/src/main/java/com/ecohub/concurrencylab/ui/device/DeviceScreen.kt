@@ -47,7 +47,10 @@ fun DeviceScreen(
             TemperatureHeroCard(
                 temperatureText = state.temperatureText,
                 versionLabel = state.versionLabel,
-                loading = state.loading
+                loading = state.loading,
+                onAdjustClicked = { delta ->
+                    onIntent(DeviceIntent.AdjustTemperature(delta))
+                }
             )
             TemperatureControlsCard(
                 temperatureInput = state.temperatureInput,
@@ -92,8 +95,11 @@ private fun ScreenHeader() {
 private fun TemperatureHeroCard(
     temperatureText: String,
     versionLabel: String,
-    loading: Boolean
+    loading: Boolean,
+    onAdjustClicked: (Double) -> Unit
 ) {
+    val isAtMax = temperatureText.startsWith("30.0")
+    val isAtMin = temperatureText.startsWith("5.0")
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -103,6 +109,7 @@ private fun TemperatureHeroCard(
             modifier = Modifier.padding(Dimens.CardPaddingLarge),
             verticalArrangement = Arrangement.spacedBy(Dimens.TextSpacing)
         ) {
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -113,6 +120,7 @@ private fun TemperatureHeroCard(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 if (!loading) {
                     Text(
                         text = versionLabel,
@@ -122,22 +130,39 @@ private fun TemperatureHeroCard(
                 }
             }
 
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .semantics {
-                        contentDescription = if (loading) {
-                            "Current temperature is loading"
-                        } else {
-                            "Current temperature: $temperatureText"
-                        }
-                    }
+                        contentDescription =
+                            if (loading)
+                                "Current temperature is loading"
+                            else
+                                "Current temperature: $temperatureText"
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+
+                Button(
+                    onClick = { onAdjustClicked(-0.5) },
+                    enabled = !loading  && !isAtMin
+                ) {
+                    Text("–")
+                }
+
                 Text(
                     text = if (loading) "—" else temperatureText,
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+                Button(
+                    onClick = { onAdjustClicked(+0.5) },
+                    enabled = !loading && !isAtMax
+                ) {
+                    Text("+")
+                }
             }
         }
     }

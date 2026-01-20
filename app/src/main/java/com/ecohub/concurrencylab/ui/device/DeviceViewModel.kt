@@ -1,5 +1,7 @@
 package com.ecohub.concurrencylab.ui.device
 
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ecohub.concurrencylab.data.error.ConflictException
@@ -12,16 +14,26 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
+import com.ecohub.concurrencylab.ui.preferences.UiPreferences
 
 class DeviceViewModel(
-    private val repository: DeviceRepository
+    private val repository: DeviceRepository,
+    private val uiPreferences: UiPreferences,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(DeviceUiState())
+    private val _uiState = MutableStateFlow(
+        DeviceUiState(
+            collaborativeMode = uiPreferences.isCollaborativeModeEnabled()
+        )
+    )
+
     val uiState: StateFlow<DeviceUiState> = _uiState.asStateFlow()
 
-    private val _effects = MutableSharedFlow<DeviceUiEffect>(extraBufferCapacity = 1)
+    private val _effects = MutableSharedFlow<DeviceUiEffect>(replay = 1)
     val effects: SharedFlow<DeviceUiEffect> = _effects.asSharedFlow()
+
+    private val MAX_TEMP = 30.0
 
     init {
         observeDeviceState()
@@ -33,13 +45,19 @@ class DeviceViewModel(
                 _uiState.update { it.copy(temperatureInput = intent.value) }
             }
 
+            is DeviceIntent.AdjustTemperature -> {
+                adjustCurrentTemperature(intent.delta)
+            }
+
             DeviceIntent.SetTemperatureClicked -> {
                 submitTemperatureFromInput()
             }
 
             is DeviceIntent.CollaborativeModeToggled -> {
                 _uiState.update { it.copy(collaborativeMode = intent.enabled) }
+                uiPreferences.setCollaborativeModeEnabled(intent.enabled)
             }
+
 
             DeviceIntent.ConflictKeepTechnicianChosen -> {
                 _uiState.update { it.copy(conflictDialog = null) }
@@ -67,8 +85,9 @@ class DeviceViewModel(
 
     private fun submitTemperature(newTemp: Double) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isUpdating = true) }
+            // Read version right before attempting update to maximize conflict detection window
             val expectedVersion = repository.deviceState.value.version
+            _uiState.update { it.copy(isUpdating = true) }
             try {
                 repository.setTemperature(newTemp, expectedVersion)
                 _effects.tryEmit(
@@ -82,19 +101,49 @@ class DeviceViewModel(
         }
     }
 
+//    private fun submitTemperatureFromInput() {
+//        val parsed = _uiState.value.temperatureInput.trim().toDoubleOrNull()
+//        if (parsed == null) {
+//            _effects.tryEmit(DeviceUiEffect.ShowSnackbar("Enter a valid temperature"))
+//            return
+//        }
+//        submitTemperature(parsed)
+//    }
+
     private fun submitTemperatureFromInput() {
         val parsed = _uiState.value.temperatureInput.trim().toDoubleOrNull()
         if (parsed == null) {
             _effects.tryEmit(DeviceUiEffect.ShowSnackbar("Enter a valid temperature"))
             return
         }
+
+        if (parsed > MAX_TEMP) {
+            _effects.tryEmit(
+                DeviceUiEffect.ShowSnackbar("Maximum temperature is ${MAX_TEMP}°C")
+            )
+            return
+        }
+
         submitTemperature(parsed)
+    }
+
+
+    private fun adjustCurrentTemperature(delta: Double) {
+        val current = _uiState.value.temperatureText
+            .removeSuffix("°C")
+            .trim()
+            .toDoubleOrNull()
+            ?: return
+
+        val updated = current + delta
+
+        submitTemperature(updated)
     }
 
     private suspend fun handleConflict(
         conflict: ConflictException,
         userTemp: Double,
-        expectedVersion: Long
+        expectedVersion: Long,
     ) {
         val currentState = _uiState.value
         if (currentState.collaborativeMode) {

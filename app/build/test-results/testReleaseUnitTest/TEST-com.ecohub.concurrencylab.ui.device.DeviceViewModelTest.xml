@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-19T16:18:03.800Z" hostname="jahbies-MBP.fritz.box" time="0.071">
+  <properties/>
+  <testcase name="overwrite after manual conflict forces user value and clears dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.039"/>
+  <testcase name="collaborative mode conflict auto resolves and shows technician snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.021"/>
+  <testcase name="successful user update emits success snackbar and updates ui" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.004"/>
+  <testcase name="keep technician after manual conflict keeps technician value and clears dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.003"/>
+  <testcase name="manual conflict shows dialog without snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -23,6 +23,8 @@ sealed class DeviceUiEffect {
 
 sealed class DeviceIntent {
     data class TemperatureInputChanged(val value: String) : DeviceIntent()
+
+    data class AdjustTemperature(val delta: Double) : DeviceIntent()
     data object SetTemperatureClicked : DeviceIntent()
     data class CollaborativeModeToggled(val enabled: Boolean) : DeviceIntent()
     data object ConflictKeepTechnicianChosen : DeviceIntent()
