@@ -136,5 +136,3 @@ Tool: ChatGPT.
 - I also used it for tests. When a test failed in a way that wasn’t obvious, I pasted the error and used ChatGPT to quickly understand what was going wrong and how to fix it.
 
 - It was also useful during documentation (README.md).
-
-**ChatGPT did not design the architecture or write the core logic. It was mainly used as a support tool for debugging, validation, and documentation.**
