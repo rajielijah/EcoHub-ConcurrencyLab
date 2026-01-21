@@ -109,7 +109,7 @@ Makes race conditions observable without polluting UI logic.v
 
 ### String resources
 
-All user-facing UI text is defined in strings.xml.
+All UI text is defined in strings.xml.
 Snackbar messages are generated in the ViewModel as one-off UI effects, 
 which keeps the ViewModel free of Android resource dependencies while ensuring that the main UI text remains fully localizable. I
 n a production app, these messages could also be moved to string resources if more comprehensive localization were required.
