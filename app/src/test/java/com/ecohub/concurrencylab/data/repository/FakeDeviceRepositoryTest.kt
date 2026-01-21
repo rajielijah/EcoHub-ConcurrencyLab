@@ -47,22 +47,26 @@ class FakeDeviceRepositoryTest {
     }
 
     @Test
-    fun `setTemperature clamps temperature to max bound`() = runTest(dispatcher) {
+    fun `setTemperature clamps value using repository contract`() = runTest(dispatcher) {
         val repo = createRepo()
 
         try {
+            val max = repo.maxTemperature
+            val expectedVersion = repo.deviceState.value.version
+
             repo.setTemperature(
-                newTemp = 100.0,
-                expectedVersion = 0L
+                newTemp = max + 100,
+                expectedVersion = expectedVersion
             )
 
             val state = repo.deviceState.value
-            assertEquals(30.0, state.temperature, 0.0)
-            assertEquals(1L, state.version)
+            assertEquals(max, state.temperature, 0.0)
+            assertEquals(expectedVersion + 1, state.version)
         } finally {
             repo.close()
         }
     }
+
 
     @Test
     fun `setTemperature throws conflict and does not mutate state when version mismatches`() =

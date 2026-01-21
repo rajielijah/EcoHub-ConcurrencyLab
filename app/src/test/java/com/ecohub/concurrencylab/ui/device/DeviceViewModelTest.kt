@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -106,9 +107,8 @@ class DeviceViewModelTest {
         job.cancel()
     }
 
-
     @Test
-    fun `option B feedback emits adjusted message when clamped`() = runTest {
+    fun `clamped update uses repository bounds and emits one-off snackbar`() = runTest {
         createViewModel()
 
         val effects = mutableListOf<DeviceUiEffect>()
@@ -116,17 +116,34 @@ class DeviceViewModelTest {
             viewModel.effects.collect { effects += it }
         }
 
-        viewModel.onIntent(DeviceIntent.TemperatureInputChanged("100"))
+        val max = repository.maxTemperature
+
+        viewModel.onIntent(
+            DeviceIntent.TemperatureInputChanged((max + 50).toString())
+        )
         viewModel.onIntent(DeviceIntent.SetTemperatureClicked)
 
         advanceUntilIdle()
 
-        assertEquals(30.0, viewModel.uiState.value.temperature)
+        val state = viewModel.uiState.value
+        assertEquals(max, state.temperature)
+
+        assertEquals(1, effects.size)
         assertEquals(
-            "Temperature adjusted to 30.0°C",
-            (effects.last() as DeviceUiEffect.ShowSnackbar).message
+            "Temperature adjusted to ${String.format("%.1f°C", max)}",
+            (effects.first() as DeviceUiEffect.ShowSnackbar).message
         )
 
         job.cancel()
+
+        val newEffects = mutableListOf<DeviceUiEffect>()
+        val secondJob = launch {
+            viewModel.effects.collect { newEffects += it }
+        }
+
+        advanceUntilIdle()
+        assertTrue(newEffects.isEmpty())
+
+        secondJob.cancel()
     }
 }

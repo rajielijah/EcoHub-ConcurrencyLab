@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-20T22:30:32" hostname="jahbies-MBP.fritz.box" time="0.26">
+<testsuite name="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-21T10:15:48" hostname="jahbies-MBP.fritz.box" time="0.334">
   <properties/>
-  <testcase name="setTemperature clamps temperature to max bound" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.232"/>
-  <testcase name="setTemperature updates state when version matches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.004"/>
-  <testcase name="technician job advances temperature and version deterministically" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.008"/>
-  <testcase name="setTemperature throws conflict and does not mutate state when version mismatches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.011"/>
-  <testcase name="user update conflicts when technician advances version" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.004"/>
+  <testcase name="setTemperature clamps value using repository contract" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.302"/>
+  <testcase name="setTemperature updates state when version matches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.008"/>
+  <testcase name="technician job advances temperature and version deterministically" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.007"/>
+  <testcase name="setTemperature throws conflict and does not mutate state when version mismatches" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.01"/>
+  <testcase name="user update conflicts when technician advances version" classname="com.ecohub.concurrencylab.data.repository.FakeDeviceRepositoryTest" time="0.006"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
