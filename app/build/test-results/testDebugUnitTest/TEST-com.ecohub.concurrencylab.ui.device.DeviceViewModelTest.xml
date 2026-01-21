@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-21T10:15:48" hostname="jahbies-MBP.fritz.box" time="0.086">
+<testsuite name="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-01-21T10:53:23" hostname="jahbies-MBP.fritz.box" time="0.064">
   <properties/>
-  <testcase name="invalid input emits snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.043"/>
-  <testcase name="initial state reflects repository and preferences" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.004"/>
-  <testcase name="valid input updates temperature" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.01"/>
-  <testcase name="collaborative mode conflict emits snackbar and no dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.01"/>
-  <testcase name="clamped update uses repository bounds and emits one-off snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.018"/>
+  <testcase name="invalid input emits snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.039"/>
+  <testcase name="initial state reflects repository and preferences" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.002"/>
+  <testcase name="valid input updates temperature" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.006"/>
+  <testcase name="collaborative mode conflict emits snackbar and no dialog" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.008"/>
+  <testcase name="clamped update uses repository bounds and emits one-off snackbar" classname="com.ecohub.concurrencylab.ui.device.DeviceViewModelTest" time="0.008"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

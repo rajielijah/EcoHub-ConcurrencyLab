@@ -25,6 +25,8 @@ class FakeDeviceRepository(
 
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 
+    private val latencyProvider: LatencyProvider = NoLatency,
+
 ) : DeviceRepository {
 
     private val mutex = Mutex()
@@ -46,6 +48,7 @@ class FakeDeviceRepository(
         value.coerceIn(minTemp, maxTemp)
 
     override suspend fun setTemperature(newTemp: Double, expectedVersion: Long) {
+        latencyProvider.delay()
         mutex.withLock {
             val current = _deviceState.value
 
@@ -98,7 +101,7 @@ class FakeDeviceRepository(
     }
 
     companion object {
-        private const val TECHNICIAN_INTERVAL_MILLIS = 15_000L
+        private const val TECHNICIAN_INTERVAL_MILLIS = 5_000L
         private const val TECHNICIAN_STEP = 0.5
         private const val MIN_TEMP = 5.0
         private const val MAX_TEMP = 30.0

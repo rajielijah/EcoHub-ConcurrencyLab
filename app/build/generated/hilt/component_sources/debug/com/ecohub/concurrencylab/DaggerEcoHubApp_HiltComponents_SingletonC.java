@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import com.ecohub.concurrencylab.data.repository.DeviceRepository;
+import com.ecohub.concurrencylab.data.repository.LatencyProvider;
 import com.ecohub.concurrencylab.di.AppModule_ProvideDeviceRepositoryFactory;
+import com.ecohub.concurrencylab.di.AppModule_ProvideLatencyProviderFactory;
 import com.ecohub.concurrencylab.di.AppModule_ProvideUiPreferencesFactory;
 import com.ecohub.concurrencylab.ui.device.DeviceViewModel;
 import com.ecohub.concurrencylab.ui.device.DeviceViewModel_HiltModules;
@@ -545,6 +547,8 @@ public final class DaggerEcoHubApp_HiltComponents_SingletonC {
 
     private final SingletonCImpl singletonCImpl = this;
 
+    private Provider<LatencyProvider> provideLatencyProvider;
+
     private Provider<DeviceRepository> provideDeviceRepositoryProvider;
 
     private Provider<UiPreferences> provideUiPreferencesProvider;
@@ -557,8 +561,9 @@ public final class DaggerEcoHubApp_HiltComponents_SingletonC {
 
     @SuppressWarnings("unchecked")
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
+      this.provideLatencyProvider = DoubleCheck.provider(new SwitchingProvider<LatencyProvider>(singletonCImpl, 1));
       this.provideDeviceRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<DeviceRepository>(singletonCImpl, 0));
-      this.provideUiPreferencesProvider = DoubleCheck.provider(new SwitchingProvider<UiPreferences>(singletonCImpl, 1));
+      this.provideUiPreferencesProvider = DoubleCheck.provider(new SwitchingProvider<UiPreferences>(singletonCImpl, 2));
     }
 
     @Override
@@ -595,9 +600,12 @@ public final class DaggerEcoHubApp_HiltComponents_SingletonC {
       public T get() {
         switch (id) {
           case 0: // com.ecohub.concurrencylab.data.repository.DeviceRepository 
-          return (T) AppModule_ProvideDeviceRepositoryFactory.provideDeviceRepository();
+          return (T) AppModule_ProvideDeviceRepositoryFactory.provideDeviceRepository(singletonCImpl.provideLatencyProvider.get());
 
-          case 1: // com.ecohub.concurrencylab.ui.preferences.UiPreferences 
+          case 1: // com.ecohub.concurrencylab.data.repository.LatencyProvider 
+          return (T) AppModule_ProvideLatencyProviderFactory.provideLatencyProvider();
+
+          case 2: // com.ecohub.concurrencylab.ui.preferences.UiPreferences 
           return (T) AppModule_ProvideUiPreferencesFactory.provideUiPreferences(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           default: throw new AssertionError(id);
